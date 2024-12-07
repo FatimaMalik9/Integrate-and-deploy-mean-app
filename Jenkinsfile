@@ -34,5 +34,31 @@ pipeline{
                 }
             }
         }
+        stage('Archive Artifacts'){
+            steps{
+                dir('Mocha/restapi-testing'){
+                    //archiveArtifacts artifacts: 'test-results.xml, coverage/**', allowEmptyArchive:true
+
+                    archiveArtifacts artifacts : 'mochawesome-report/**/*',allowEmptyArchive: true
+                }
+            }
+        }
     }
-}
+    post{
+        always{
+            //junit 'test-results.xml'
+            emailext(
+                to: 'fm460417@gmail.com',
+                subject: "Build ${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
+                body: """<p>Build ${env.BUILD_NUMBER} - ${currentBuild.currentResult}</p>
+                <p><a href="${env.BUILD_URL}artifact/mochawesone-report/index.html">View Test Report</a></p>""",
+                attachLog: true,*/
+                attachmentsPattern: 'mochawesome-report/**/*'
+            )
+       }
+    }
+
+}      
+       
+
+
